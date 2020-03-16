@@ -4,7 +4,6 @@ BOSCO_KEY=/etc/osg/bosco.key
 # $REMOTE_HOST needs to be specified in the environment
 REMOTE_HOST_KEY=`ssh-keyscan -H "$REMOTE_HOST"`
 ENDPOINT_CONFIG=/etc/endpoints.ini
-OVERRIDE_DIR=/etc/condor-ce/bosco_override
 
 setup_ssh_config () {
   echo "Adding user ${ruser}"
@@ -66,8 +65,10 @@ echo $REMOTE_HOST_KEY >> $root_ssh_dir/known_hosts
 # Populate the bosco override dir from a Git repo
 GIT_SSH_KEY=/etc/osg/git.key
 [[ -f $GIT_SSH_KEY ]] && export GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY"
-[[ -z $BOSCO_GIT_ENDPOINT || -z $BOSCO_DIRECTORY ]] || \
+if [[ -z $BOSCO_GIT_ENDPOINT || -z $BOSCO_DIRECTORY ]]; then
+    OVERRIDE_DIR=/etc/condor-ce/bosco_override
     /usr/local/bin/bosco-override-setup.sh "$BOSCO_GIT_ENDPOINT" "$BOSCO_DIRECTORY"
+fi
 unset GIT_SSH_COMMAND
 
 users=$(cat /etc/grid-security/grid-mapfile /etc/grid-security/voms-mapfile | \
@@ -75,11 +76,13 @@ users=$(cat /etc/grid-security/grid-mapfile /etc/grid-security/voms-mapfile | \
             sort -u)
 [[ -n $users ]] || exit 1
 
+override_opts=""
 for ruser in $users; do
     setup_ssh_config
     setup_endpoints_ini
+    [[ -z $OVERRIDE_DIR ]] || override_opts="-o $OVERRIDE_DIR"
     # $REMOTE_BATCH needs to be specified in the environment
-    bosco_cluster -o "$OVERRIDE_DIR" -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
+    bosco_cluster $override_opts -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
 done
 
 sudo -u condor update-all-remote-wn-clients --log-dir /var/log/condor-ce/
