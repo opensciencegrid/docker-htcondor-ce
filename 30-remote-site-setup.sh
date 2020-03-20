@@ -80,7 +80,7 @@ override_opts=""
 for ruser in $users; do
     setup_ssh_config
     setup_endpoints_ini
-    [[ -z $OVERRIDE_DIR ]] || override_opts="-o $OVERRIDE_DIR"
+    [[ -d $OVERRIDE_DIR ]] && override_opts="-o $OVERRIDE_DIR"
     # $REMOTE_BATCH needs to be specified in the environment
     bosco_cluster $override_opts -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
 done
