@@ -30,6 +30,8 @@ RUN chmod 644 /etc/cron.d/fetch-crl
 # Include script to drain the CE and upload accounting data to prepare for container teardown
 COPY drain-ce.sh /usr/local/bin/
 
+COPY remote-wn-client-wrapper.sh /usr/local/bin/
+
 # Use "ssh -q" in bosco_cluster and update-remote-wn-client until the changes have been
 # upstreamed to condor and hosted-ce-tools packaging, respectively
 COPY ssh_q.patch /tmp
