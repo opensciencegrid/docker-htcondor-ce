@@ -2,6 +2,7 @@ FROM opensciencegrid/software-base:fresh
 LABEL maintainer "OSG Software <help@opensciencegrid.org>"
 
 RUN yum install -y --enablerepo=osg-minefield \
+                   --enablerepo=osg-upcoming-minefield \
                    osg-ce-bosco \
                    git \
                    openssh-clients \
