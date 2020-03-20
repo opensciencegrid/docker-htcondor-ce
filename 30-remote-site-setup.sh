@@ -74,11 +74,15 @@ users=$(cat /etc/grid-security/grid-mapfile /etc/grid-security/voms-mapfile | \
             sort -u)
 [[ -n $users ]] || exit 1
 
+grep '^OSG_GRID="/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client' \
+     /var/lib/osg/job-environment*.conf > /dev/null 2>&1
+cvmfs_wn_client=$?
+
 for ruser in $users; do
     setup_ssh_config
-    setup_endpoints_ini
+    [[ $cvmfs_wn_client -eq 0 ]] || setup_endpoints_ini
     # $REMOTE_BATCH needs to be specified in the environment
     bosco_cluster -o "$OVERRIDE_DIR" -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
 done
 
-sudo -u condor update-all-remote-wn-clients --log-dir /var/log/condor-ce/
+[[ $cvmfs_wn_client -eq 0 ]] || sudo -u condor update-all-remote-wn-clients --log-dir /var/log/condor-ce/
