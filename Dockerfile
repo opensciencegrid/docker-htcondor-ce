@@ -22,9 +22,6 @@ COPY 99-container.conf /usr/share/condor-ce/config.d/
 RUN chmod 1777 /var/lib/gratia/tmp
 RUN touch /var/lock/subsys/gratia-probes-cron
 
-# can be dropped when provided by upstream htcondor-ce packaging
-RUN mkdir -p /etc/condor-ce/bosco_override
-
 # do the bad thing of overwriting the existing cron job for fetch-crl
 ADD fetch-crl /etc/cron.d/fetch-crl
 RUN chmod 644 /etc/cron.d/fetch-crl
