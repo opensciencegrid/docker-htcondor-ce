@@ -8,7 +8,8 @@ RUN yum install -y --enablerepo=osg-minefield \
                    openssh-clients \
                    sudo \
                    wget \
-                   certbot && \
+                   certbot \
+                   patch && \
     yum clean all && \
     rm -rf /var/cache/yum/
 
@@ -22,9 +23,6 @@ COPY 99-container.conf /usr/share/condor-ce/config.d/
 RUN chmod 1777 /var/lib/gratia/tmp
 RUN touch /var/lock/subsys/gratia-probes-cron
 
-# can be dropped when provided by upstream htcondor-ce packaging
-RUN mkdir -p /etc/condor-ce/bosco_override
-
 # do the bad thing of overwriting the existing cron job for fetch-crl
 ADD fetch-crl /etc/cron.d/fetch-crl
 RUN chmod 644 /etc/cron.d/fetch-crl
@@ -32,8 +30,10 @@ RUN chmod 644 /etc/cron.d/fetch-crl
 # Include script to drain the CE and upload accounting data to prepare for container teardown
 COPY drain-ce.sh /usr/local/bin/
 
-# Use "ssh -q" in bosco_cluster
-COPY bosco_cluster /usr/bin
+# Use "ssh -q" in bosco_cluster and update-remote-wn-client until the changes have been
+# upstreamed to condor and hosted-ce-tools packaging, respectively
+COPY ssh_q.patch /tmp
+RUN patch -d / -p0 < /tmp/ssh_q.patch
 
 # Set up Bosco override dir from Git repo (SOFTWARE-3903)
 # Expects a Git repo with the following directory structure:
