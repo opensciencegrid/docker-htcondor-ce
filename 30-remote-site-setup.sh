@@ -21,7 +21,6 @@ setup_ssh_config () {
   chmod 600 $ssh_key
   chown "${ruser}": $ssh_key
   cat <<EOF > $ssh_dir/config
-PreferredAuthentications publickey
 IdentitiesOnly yes
 IdentityFile ${ssh_key}
 EOF
@@ -40,8 +39,8 @@ EOF
 # Install the WN client, CAs, and CRLs on the remote host
 # Store logs in /var/log/condor-ce/ to simplify serving logs via Kubernetes
 setup_endpoints_ini () {
-    remote_home_dir=$(ssh -vvvv -i $BOSCO_KEY "${ruser}@$REMOTE_HOST" pwd)
-    remote_os_ver=$(ssh -vvvv -i $BOSCO_KEY "${ruser}@$REMOTE_HOST" "rpm -E %rhel")
+    remote_home_dir=$(ssh -q -i $BOSCO_KEY "${ruser}@$REMOTE_HOST" pwd)
+    remote_os_ver=$(ssh -q -i $BOSCO_KEY "${ruser}@$REMOTE_HOST" "rpm -E %rhel")
     osg_ver=3.4
     if [[ $remote_os_ver -gt 6 ]]; then
         osg_ver=3.5
