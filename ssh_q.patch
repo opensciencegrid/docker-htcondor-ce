@@ -1,0 +1,34 @@
+*** /usr/bin/bosco_cluster	2019-11-08 14:08:14.613833413 -0600
+--- /usr/bin/bosco_cluster	2020-03-16 15:59:09.660871401 -0500
+***************
+*** 5,10 ****
+--- 5,11 ----
+  # as function exit code (by return) and this is modulo 256
+  # see cluster_list_iterator, list
+ 
++ alias ssh='ssh -q'
+ 
+  # Bosco key location
+  bosco_key=$HOME/.ssh/bosco_key.rsa
+
+--- /usr/bin/update-remote-wn-client
++++ /usr/bin/update-remote-wn-client
+@@ -129,6 +129,8 @@ def check_connectivity(remote_user, remote_host, ssh_key):
+     if ssh_key:
+         ssh.extend(["-i", ssh_key])
+     try:
++        # Suppress any SSH pre-login banners
++        ssh.extend(["-q"])
+         subprocess.check_call(ssh + [remote_host, "true"])
+     except CalledProcessError:
+         return False
+@@ -151,5 +153,8 @@ def rsync_upload(local_dir, remote_user, remote_host, remote_dir, ssh_key=None):
+     olddir = "%s~old~" % remote_dir
+     newdir = "%s~new~" % remote_dir
+     local_dir = local_dir.rstrip("/") + "/"  # exactly 1 trailing slash
++
++    # Suppress any SSH pre-login banners
++    ssh.extend(["-q"])
+ 
+     errstr = "Error rsyncing to remote host %s:%s: " % (remote_host, remote_dir)
+     try:
