@@ -80,16 +80,17 @@ grep '^OSG_GRID="/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client' \
 cvmfs_wn_client=$?
 
 override_opts=""
+if [[ -n $OVERRIDE_DIR ]]; then
+    if [[ -d $OVERRIDE_DIR ]]; then
+        override_opts="-o $OVERRIDE_DIR"
+    else
+        echo "WARNING: $OVERRIDE_DIR is not a directory. Skipping Bosco override."
+    fi
+fi
+
 for ruser in $users; do
     setup_ssh_config
     [[ $cvmfs_wn_client -eq 0 ]] || setup_endpoints_ini
-    if [[ -n $OVERRIDE_DIR ]]; then
-        if [[ -d $OVERRIDE_DIR ]]; then
-            override_opts="-o $OVERRIDE_DIR"
-        else
-            echo "WARNING: $OVERRIDE_DIR is not a directory. Skipping Bosco override."
-        fi
-    fi
     # $REMOTE_BATCH needs to be specified in the environment
     bosco_cluster $override_opts -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
 done
