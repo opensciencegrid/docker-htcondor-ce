@@ -65,7 +65,7 @@ echo $REMOTE_HOST_KEY >> $root_ssh_dir/known_hosts
 # Populate the bosco override dir from a Git repo
 GIT_SSH_KEY=/etc/osg/git.key
 [[ -f $GIT_SSH_KEY ]] && export GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY"
-if [[ -z $BOSCO_GIT_ENDPOINT || -z $BOSCO_DIRECTORY ]]; then
+if [[ -n $BOSCO_GIT_ENDPOINT && -n $BOSCO_DIRECTORY ]]; then
     OVERRIDE_DIR=/etc/condor-ce/bosco_override
     /usr/local/bin/bosco-override-setup.sh "$BOSCO_GIT_ENDPOINT" "$BOSCO_DIRECTORY"
 fi
