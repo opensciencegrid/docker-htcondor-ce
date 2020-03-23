@@ -80,7 +80,13 @@ override_opts=""
 for ruser in $users; do
     setup_ssh_config
     setup_endpoints_ini
-    [[ -d $OVERRIDE_DIR ]] && override_opts="-o $OVERRIDE_DIR"
+    if [[ -n $OVERRIDE_DIR ]]; then
+        if [[ -d $OVERRIDE_DIR ]]; then
+            override_opts="-o $OVERRIDE_DIR"
+        else
+            echo "WARNING: $OVERRIDE_DIR is not a directory. Skipping Bosco override."
+        fi
+    fi
     # $REMOTE_BATCH needs to be specified in the environment
     bosco_cluster $override_opts -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
 done
