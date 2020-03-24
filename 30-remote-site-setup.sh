@@ -4,7 +4,6 @@ BOSCO_KEY=/etc/osg/bosco.key
 # $REMOTE_HOST needs to be specified in the environment
 REMOTE_HOST_KEY=`ssh-keyscan -H "$REMOTE_HOST"`
 ENDPOINT_CONFIG=/etc/endpoints.ini
-OVERRIDE_DIR=/etc/condor-ce/bosco_override
 
 setup_ssh_config () {
   echo "Adding user ${ruser}"
@@ -65,8 +64,10 @@ echo $REMOTE_HOST_KEY >> $root_ssh_dir/known_hosts
 # Populate the bosco override dir from a Git repo
 GIT_SSH_KEY=/etc/osg/git.key
 [[ -f $GIT_SSH_KEY ]] && export GIT_SSH_COMMAND="ssh -i $GIT_SSH_KEY"
-[[ -z $BOSCO_GIT_ENDPOINT || -z $BOSCO_DIRECTORY ]] || \
+if [[ -n $BOSCO_GIT_ENDPOINT && -n $BOSCO_DIRECTORY ]]; then
+    OVERRIDE_DIR=/etc/condor-ce/bosco_override
     /usr/local/bin/bosco-override-setup.sh "$BOSCO_GIT_ENDPOINT" "$BOSCO_DIRECTORY"
+fi
 unset GIT_SSH_COMMAND
 
 users=$(cat /etc/grid-security/grid-mapfile /etc/grid-security/voms-mapfile | \
@@ -78,11 +79,20 @@ grep '^OSG_GRID="/cvmfs/oasis.opensciencegrid.org/osg-software/osg-wn-client' \
      /var/lib/osg/job-environment*.conf > /dev/null 2>&1
 cvmfs_wn_client=$?
 
+override_opts=()
+if [[ -n $OVERRIDE_DIR ]]; then
+    if [[ -d $OVERRIDE_DIR ]]; then
+        override_opts=(-o "$OVERRIDE_DIR")
+    else
+        echo "WARNING: $OVERRIDE_DIR is not a directory. Skipping Bosco override."
+    fi
+fi
+
 for ruser in $users; do
     setup_ssh_config
     [[ $cvmfs_wn_client -eq 0 ]] || setup_endpoints_ini
     # $REMOTE_BATCH needs to be specified in the environment
-    bosco_cluster -o "$OVERRIDE_DIR" -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
+    bosco_cluster "${override_opts[@]}" -a "${ruser}@$REMOTE_HOST" "$REMOTE_BATCH"
 done
 
 [[ $cvmfs_wn_client -eq 0 ]] || sudo -u condor update-all-remote-wn-clients --log-dir /var/log/condor-ce/
