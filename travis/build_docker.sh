@@ -1,9 +1,9 @@
 #!/bin/bash -xe
-# Script for building and pushing Hosted CE docker images
+# Script for building and pushing HTCondor-CE docker images
 
 org='opensciencegrid'
 timestamp=`date +%Y%m%d-%H%M`
-docker_repos='hosted-ce'
+docker_repos='htcondor-ce'
 
 for repo in $docker_repos; do
     docker build \
