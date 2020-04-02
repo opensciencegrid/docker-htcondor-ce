@@ -10,5 +10,7 @@ condor_ce_reconfig
 # Remove all existing jobs
 condor_ce_rm -all
 
+# TODO: Add env var that controls whether or not we enable Gratia
+# since the Open Science CE doesn't need to upload CE records
 # Upload accounting data
-/usr/share/gratia/htcondor-ce/condor_meter
+# /usr/share/gratia/htcondor-ce/condor_meter
