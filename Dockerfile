@@ -5,8 +5,8 @@ RUN groupadd -g 1000 -r condor
 RUN useradd -r -g condor -d /var/lib/condor -s /sbin/nologin \
     -u 1000 -c "Owner of HTCondor Daemons" condor
 
-RUN yum install -y --enablerepo=osg-minefield \
-                   --enablerepo=osg-upcoming-minefield \
+RUN yum install -y --enablerepo=osg-development \
+                   --enablerepo=osg-upcoming-development \
                    osg-ce-condor && \
     yum clean all && \
     rm -rf /var/cache/yum/
