@@ -21,13 +21,12 @@ popd
 users=$(cat /etc/grid-security/grid-mapfile /etc/grid-security/voms-mapfile | \
             awk '/^"[^"]+" +[a-zA-Z0-9\-\._]+$/ {print $NF}' | \
             sort -u | \
-            tr '\n' ',')
+            tr '\n' ' ')
 [[ -n $users ]] || { echo >&2 "No users found in /etc/grid-security/grid-mapfile or /etc/grid-security/voms-mapfile"; exit 1; }
-# Use param expansion to remove the trailing comma
-CONDOR_SUDO_FILE=/etc/sudoers.d/10-condor-ssh
-echo "condor ALL = (${users%%,}) NOPASSWD: /usr/bin/update-remote-wn-client" \
-      > $CONDOR_SUDO_FILE
-chmod 644 $CONDOR_SUDO_FILE
+
+for user in $users; do
+    useradd -s /bin/nologin -m $user
+done
 
 echo "Running OSG configure.."
 # Run the OSG Configure script to set up bosco
