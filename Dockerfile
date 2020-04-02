@@ -7,7 +7,8 @@ RUN useradd -r -g condor -d /var/lib/condor -s /sbin/nologin \
 
 RUN yum install -y --enablerepo=osg-development \
                    --enablerepo=osg-upcoming-development \
-                   osg-ce-condor && \
+                   osg-ce-condor \
+                   certbot && \
     yum clean all && \
     rm -rf /var/cache/yum/
 
