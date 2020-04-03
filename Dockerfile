@@ -14,6 +14,10 @@ RUN yum install -y --enablerepo=osg-development \
 
 COPY 20-htcondor-ce-setup.sh /etc/osg/image-config.d/
 
+# Hardcoded token mapping for development
+# TODO: Remove this once the PTR is ready
+COPY condor_mapfile /etc/condor-ce/
+
 COPY 99-container.conf /usr/share/condor-ce/config.d/
 
 # TODO: Drop this after implementing non-root Gratia probes
