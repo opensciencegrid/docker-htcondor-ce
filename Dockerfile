@@ -18,6 +18,10 @@ COPY 20-htcondor-ce-setup.sh /etc/osg/image-config.d/
 # TODO: Remove this once the PTR is ready
 COPY condor_mapfile /etc/condor-ce/
 
+# Override job route verification that fails when attributes contain '['
+# TODO: Drop this when fixed upstream
+COPY verify_ce_config.py /usr/share/condor-ce/
+
 COPY 99-container.conf /usr/share/condor-ce/config.d/
 
 # TODO: Drop this after implementing non-root Gratia probes
