@@ -14,10 +14,6 @@ RUN yum install -y --enablerepo=osg-development \
 
 COPY 20-htcondor-ce-setup.sh /etc/osg/image-config.d/
 
-# Hardcoded token mapping for development
-# TODO: Remove this once the PTR is ready
-COPY condor_mapfile /etc/condor-ce/
-
 # Override job route verification that fails when attributes contain '['
 # TODO: Drop this when fixed upstream
 COPY verify_ce_config.py /usr/share/condor-ce/
