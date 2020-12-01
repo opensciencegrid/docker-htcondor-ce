@@ -5,8 +5,8 @@ RUN groupadd -g 64 -r condor
 RUN useradd -r -g condor -d /var/lib/condor -s /sbin/nologin \
     -u 64 -c "Owner of HTCondor Daemons" condor
 
-RUN yum install -y --enablerepo=osg-development \
-                   --enablerepo=osg-upcoming-development \
+RUN yum install -y --enablerepo=osg-testing \
+                   --enablerepo=osg-upcoming-testing \
                    osg-ce-condor \
                    certbot && \
     yum clean all && \
