@@ -54,3 +54,10 @@ fi
 echo ">>>>> YOUR CERTIFICATE INFORMATION IS:"
 openssl x509 -in $hostcert_path -noout -text
 echo "><><><><><><><><><><><><><><><><><><><"
+
+
+log=$(condor_ce_config_val LOG); ret=$?
+[[ -n $log && $ret == 0 ]] || fail "Couldn't get log directory (value of the LOG config option)"
+spool=$(condor_ce_config_val SPOOL); ret=$?
+[[ -n $spool && $ret == 0 ]] || fail "Couldn't get spool directory (value of the SPOOL config option)"
+chown -R condor:condor "$log" "$spool"
