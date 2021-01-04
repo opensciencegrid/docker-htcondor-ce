@@ -5,10 +5,13 @@ RUN groupadd -g 64 -r condor
 RUN useradd -r -g condor -d /var/lib/condor -s /sbin/nologin \
     -u 64 -c "Owner of HTCondor Daemons" condor
 
+# FIXME: get the latest osg-configure so that fetch-crl errors don't prevent CE configuration:
+# https://opensciencegrid.atlassian.net/browse/SOFTWARE-4364
 RUN yum install -y --enablerepo=osg-testing \
                    --enablerepo=osg-upcoming-testing \
                    osg-ce-condor \
                    certbot && \
+    yum update -y --enablerepo=osg-development osg-configure && \
     yum clean all && \
     rm -rf /var/cache/yum/
 
