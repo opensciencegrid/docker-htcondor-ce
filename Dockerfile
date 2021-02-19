@@ -8,7 +8,7 @@ RUN useradd -r -g condor -d /var/lib/condor -s /sbin/nologin \
 # FIXME: get the latest osg-configure so that fetch-crl errors don't prevent CE configuration:
 # https://opensciencegrid.atlassian.net/browse/SOFTWARE-4364
 RUN yum install -y --enablerepo=osg-testing \
-                   --enablerepo=osg-upcoming-testing \
+                   --enablerepo=osg-upcoming \
                    osg-ce-condor \
                    certbot && \
     yum update -y --enablerepo=osg-development osg-configure && \
